@@ -79,15 +79,12 @@ class StockPicking(models.Model):
 
     @api.multi
     def do_transfer(self):
-        self.ensure_one()
         res = super(StockPicking, self).do_transfer()
-
-        if self.carrier_id and self.carrier_id.delivery_type not in ['fixed', 'base_on_rule'] and self.carrier_id.shipping_enabled:
-            self.send_to_shipper()
-
-        if self.carrier_id:
-            self._add_delivery_cost_to_so()
-
+        for picking in self:
+            if picking.carrier_id and picking.carrier_id.delivery_type not in ['fixed', 'base_on_rule'] and picking.carrier_id.shipping_enabled:
+                picking.send_to_shipper()
+            if picking.carrier_id:
+                picking._add_delivery_cost_to_so()
         return res
 
     @api.multi
