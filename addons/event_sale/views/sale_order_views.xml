@@ -5,6 +5,16 @@
              <field name="model">sale.order</field>
              <field name="inherit_id" ref="sale.view_order_form" />
              <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button name="button_open_registration"
+                            class="oe_stat_button"
+                            type="object"
+                            icon="fa-ticket"
+                            attrs="{'invisible': [('registration_count','&lt;',1)]}">
+                        <field string="Registrations"
+                               name="registration_count" widget="statinfo"/>
+                    </button>
+                </div>
                 <xpath expr="//field[@name='order_line']//form//field[@name='product_id']" position="after">
                     <field name="event_id" domain="[('event_ticket_ids.product_id','=', product_id),('date_end','&gt;=',time.strftime('%Y-%m-%d 00:00:00'))]" attrs="{'invisible': [('event_ok', '=', False)],'required': [('event_ok', '!=', False)]}"/>
                     <field name="event_ticket_id" domain="[('event_id', '=', event_id), ('product_id','=',product_id), '|', ('seats_availability', '=', 'unlimited'), ('seats_available', '>', 0)]" attrs="{'invisible': [('event_ok', '=', False)], 'required': [('event_ok', '!=', False)]}"/>

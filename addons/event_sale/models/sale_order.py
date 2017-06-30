@@ -6,6 +6,27 @@ from odoo import api, fields, models
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    registration_ids = fields.One2many(
+        comodel_name='event.registration', inverse_name='sale_order_id',
+        string='Attendees', readonly=True)
+    registration_count = fields.Integer(
+        string="Attendees", compute="_compute_registration_count")
+
+    @api.multi
+    def _compute_registration_count(self):
+        for order in self:
+            order.registration_count = len(order.registration_ids)
+
+    @api.multi
+    def button_open_registration(self):
+        """Opens order registrations"""
+        self.ensure_one()
+        action = self.env.ref(
+            'event.act_event_registration_from_event').read()[0]
+        action['domain'] = [('id', 'in', self.registration_ids.ids)]
+        action['context'] = {}
+        return action
+
     @api.multi
     def action_confirm(self):
         self.ensure_one()
