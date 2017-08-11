@@ -305,4 +305,21 @@ class res_users(osv.Model):
         if not default or not default.get('email'):
             # avoid sending email to the user we are duplicating
             context = dict(context or {}, reset_password=False)
-        return super(res_users, self).copy(cr, uid, id, default=default, context=context)
+        res = super(res_users, self).copy(
+            cr, uid, id, default=default, context=context)
+        # Set partner pricelist depending on template user and company
+        partner_id = self.pool.get('res.partner').browse(
+            cr, uid, self.read(
+                cr, uid, [id], ['partner_id']
+            )[0]['partner_id'][0], context=context)
+        partner_copy = self.pool.get('res.partner').browse(
+            cr, uid, self.read(
+                cr, uid, [res], ['partner_id']
+            )[0]['partner_id'][0], context=context)
+        for company in self.pool['res.company'].search(cr, uid, []):
+            partner_copy.with_context(
+                force_company=company
+            ).property_product_pricelist = partner_id.with_context(
+                force_company=company
+            ).property_product_pricelist
+        return res
