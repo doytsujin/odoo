@@ -556,11 +556,10 @@ class AccountAssetDepreciationLine(models.Model):
             'line_ids': [(0, 0, move_line_1), (0, 0, move_line_2)],
         }
         move = self.env['account.move'].create(move_vals)
-        self.write({'move_id': move.id, 'move_check': True})
+        self.write({'move_id': move.id})
         created_moves |= move
 
         if post_move and created_moves:
-            self.post_lines_and_close_asset()
             created_moves.post()
         return [x.id for x in created_moves]
 
