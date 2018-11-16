@@ -743,7 +743,12 @@ actual arch.
         """
         Model = self.env[model]
 
-        if node.tag == 'field' and node.get('name') in Model._fields:
+        field_name = None
+        if node.tag == "field":
+            field_name = node.get("name")
+        elif node.tag == "label":
+            field_name = node.get("for")
+        if field_name and field_name in Model._fields:
             field = Model._fields[node.get('name')]
             if field.groups and not self.user_has_groups(groups=field.groups):
                 node.getparent().remove(node)
