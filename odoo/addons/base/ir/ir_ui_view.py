@@ -749,10 +749,10 @@ actual arch.
         elif node.tag == "label":
             field_name = node.get("for")
         if field_name and field_name in Model._fields:
-            field = Model._fields[node.get('name')]
+            field = Model._fields[field_name]
             if field.groups and not self.user_has_groups(groups=field.groups):
                 node.getparent().remove(node)
-                fields.pop(node.get('name'), None)
+                fields.pop(field_name, None)
                 # no point processing view-level ``groups`` anymore, return
                 return False
         if node.get('groups'):
