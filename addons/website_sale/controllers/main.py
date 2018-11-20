@@ -576,6 +576,7 @@ class WebsiteSale(http.Controller):
                     _logger.debug("website_sale postprocess: %s value has been dropped (empty or not writable)" % k)
 
         new_values['customer'] = True
+        new_values['company_id'] = request.website.company_id.id
         new_values['team_id'] = request.website.salesteam_id and request.website.salesteam_id.id
         new_values['user_id'] = request.website.salesperson_id and request.website.salesperson_id.id
 
