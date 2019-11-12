@@ -84,7 +84,7 @@ class SaleOrder(models.Model):
             ])
             if domain_inv:
                 refund_ids = self.env['account.invoice'].search(expression.AND([
-                    ['&', ('type', '=', 'out_refund'), ('origin', '!=', False)], 
+                    ['&', ('type', '=', 'out_refund'), ('origin', '!=', False)],
                     domain_inv
                 ]))
             else:
@@ -536,9 +536,16 @@ class SaleOrder(models.Model):
             invoice.compute_taxes()
             # Idem for partner
             so_payment_term_id = invoice.payment_term_id.id
+            so_fp_id = invoice.fiscal_position_id.id
             invoice._onchange_partner_id()
-            # To keep the payment terms set on the SO
-            invoice.payment_term_id = so_payment_term_id
+            # To keep the old vals set on the SO
+            old_vals = {}
+            if so_payment_term_id != invoice.payment_term_id.id:
+                old_vals['payment_term_id'] = so_payment_term_id
+            if so_fp_id != invoice.fiscal_position_id.id:
+                old_vals['fiscal_position_id'] = so_fp_id
+            if old_vals:
+                invoice.write(old_vals)
             invoice.message_post_with_view('mail.message_origin_link',
                 values={'self': invoice, 'origin': references[invoice]},
                 subtype_id=self.env.ref('mail.mt_note').id)
