@@ -9,9 +9,7 @@ class Users(models.Model):
     _inherit = "res.users"
 
     @api.multi
-    @api.constrains('groups_id')
-    def _check_one_user_type(self):
-        super(Users, self)._check_one_user_type()
+    def _check_one_user_type2(self):
 
         g1 = self.env.ref('account.group_show_line_subtotals_tax_included', False)
         g2 = self.env.ref('account.group_show_line_subtotals_tax_excluded', False)
