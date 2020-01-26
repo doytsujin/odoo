@@ -422,7 +422,7 @@ class Users(models.Model):
                     SELECT 1 FROM res_groups_users_rel WHERE EXISTS(
                         SELECT r.uid
                         FROM res_groups_users_rel r
-                        WHERE r.gid IN %s""" + where_clause + """
+                        WHERE r.gid IN %s """ + where_clause + """
                         GROUP BY r.uid HAVING COUNT(r.gid) > 1
                     )
             """
