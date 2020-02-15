@@ -470,7 +470,7 @@ class GeventServer(CommonServer):
             signal.signal(signal.SIGQUIT, dumpstacks)
             signal.signal(signal.SIGUSR1, log_ormcache_stats)
             gevent.spawn(self.watchdog)
-        
+
         self.httpd = WSGIServer((self.interface, self.port), self.app)
         _logger.info('Evented Service (longpolling) running on %s:%s', self.interface, self.port)
         try:
@@ -871,7 +871,7 @@ class WorkerHTTP(Worker):
     """ HTTP Request workers """
     def process_request(self, client, addr):
         client.setblocking(1)
-        client.settimeout(2)
+        client.settimeout(100)
         client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         # Prevent fd inherientence close_on_exec
         flags = fcntl.fcntl(client, fcntl.F_GETFD) | fcntl.FD_CLOEXEC
