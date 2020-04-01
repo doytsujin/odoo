@@ -31,6 +31,8 @@ class BaseLanguageImport(models.TransientModel):
     def import_lang(self):
         this = self[0]
         this = this.with_context(overwrite=this.overwrite)
+        if not self.user_has_groups('base.group_system'):
+            raise UserError(_("you don't have enough permissions to do this!"))
         with TemporaryFile('wb+') as buf:
             try:
                 buf.write(base64.decodestring(this.data))
