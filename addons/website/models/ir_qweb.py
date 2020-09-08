@@ -23,7 +23,9 @@ class AssetsBundleMultiWebsite(AssetsBundle):
 
     def _get_assets_domain_for_already_processed_css(self, assets):
         res = super(AssetsBundleMultiWebsite, self)._get_assets_domain_for_already_processed_css(assets)
-        current_website = self.env['website'].get_current_website(fallback=False)
+        current_website = self.env['website']
+        if request and request.is_frontend:
+            current_website = self.env['website'].get_current_website(fallback=False)
         res = expression.AND([res, current_website.website_domain()])
         return res
 
