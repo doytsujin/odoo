@@ -1343,7 +1343,7 @@ class MailThread(models.AbstractModel):
                 else:
                     # if a new thread is created, parent is irrelevant
                     message_dict.pop('parent_id', None)
-                    thread = MessageModel.message_new(message_dict, custom_values)
+                    thread = MessageModel.message_new(message_dict, custom_values).with_context(MessageModel._context)
                     thread_id = thread.id
             else:
                 if thread_id:
