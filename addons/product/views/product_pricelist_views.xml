@@ -114,6 +114,7 @@
                               <field name="min_quantity"/>
                               <field name="date_start"/>
                               <field name="date_end"/>
+                              <field name="sequence" attrs="{'invisible':[('applied_on', '!=', '3_global')]}"/>
                           </group>
                           <group name="pricelist_rule_related" groups="base.group_no_one">
                               <!-- Infos from the pricelist for UI rendering (monetary fields, ...) -->

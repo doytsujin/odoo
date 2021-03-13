@@ -110,7 +110,7 @@ class Pricelist(models.Model):
                 AND (item.date_start IS NULL OR item.date_start<=%s)
                 AND (item.date_end IS NULL OR item.date_end>=%s)
             ORDER BY
-                item.applied_on, item.min_quantity desc, categ.complete_name desc, item.id desc
+                item.applied_on, item.min_quantity desc, categ.complete_name desc, sequence, item.id desc
             """,
             (prod_tmpl_ids, prod_ids, categ_ids, self.id, date, date))
         # NOTE: if you change `order by` on that query, make sure it matches
@@ -213,7 +213,9 @@ class Pricelist(models.Model):
                         continue
 
                 if rule.base == 'pricelist' and rule.base_pricelist_id:
-                    price_tmp = rule.base_pricelist_id._compute_price_rule([(product, qty, partner)], date, uom_id)[product.id][0]  # TDE: 0 = price, 1 = rule
+                    price_tmp, rule_id = rule.base_pricelist_id._compute_price_rule([(product, qty, partner)], date, uom_id)[product.id]
+                    if not rule_id:
+                        continue
                     price = rule.base_pricelist_id.currency_id._convert(price_tmp, self.currency_id, self.env.company, date, round=False)
                 else:
                     # if base option is public price take sale price else cost price of product
@@ -358,7 +360,7 @@ class ResCountryGroup(models.Model):
 class PricelistItem(models.Model):
     _name = "product.pricelist.item"
     _description = "Pricelist Rule"
-    _order = "applied_on, min_quantity desc, categ_id desc, id desc"
+    _order = "applied_on, min_quantity desc, categ_id desc, sequence, id desc"
     _check_company_auto = True
     # NOTE: if you change _order on this model, make sure it matches the SQL
     # query built in _compute_price_rule() above in this file to avoid
@@ -439,6 +441,7 @@ class PricelistItem(models.Model):
     price = fields.Char(
         'Price', compute='_get_pricelist_item_name_price',
         help="Explicit rule name for this pricelist line.")
+    sequence = fields.Integer('Sequence')
 
     @api.constrains('base_pricelist_id', 'pricelist_id', 'base')
     def _check_recursion(self):
